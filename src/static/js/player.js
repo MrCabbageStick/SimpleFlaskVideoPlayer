@@ -25,6 +25,20 @@ function onSliderSetValue(value){
     this.elem.style.setProperty("--progress", `${this.value * 100}%`);
 }
 
+screen.orientation.addEventListener("change", e => {
+    checkScreenOrientation();
+})
+
+function checkScreenOrientation(){
+    if(screen.orientation.type == "landscape-primary" || screen.orientation.type == "landscape-secondary"){
+        player.requestFullscreen();
+        return;
+    }
+
+    document.exitFullscreen();
+    
+}
+
 ///// Player controlls /////
 function toggleVideo(){
     if(video.paused){
@@ -81,6 +95,7 @@ function formatSeconds(seconds){
 
 let updateTimelineTimeout = null;
 function updateTimeline(timeout){
+    
     if(!video.paused){
         timeline.setValue( video.currentTime / video.duration );
         timestamp.innerHTML = `${formatSeconds(video.currentTime)} / ${formatSeconds(video.duration)}`;
@@ -89,3 +104,4 @@ function updateTimeline(timeout){
 }
 
 updateTimeline(10);
+// checkScreenOrientation();
