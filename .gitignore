@@ -2,3 +2,4 @@ __pycache__/
 venv/
 movies_db.db
 *.mp4
+movies.json
