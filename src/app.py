@@ -27,18 +27,7 @@ def videoPage(video_id: str):
 @app.route("/detect_movies")
 def detectMoviesPage():
 
-    paths = scanForMovies(MOVIES_DB)
-
-    for path in paths:
-
-        if movies_db.getMovies(path=path).arraysize > 0:
-            continue
-
-        movies_db.addMovie(generateRandomId(), "".join(path.split(".")[:-2]), path)
-    
-    # return jsonify(movies_db.toDict(cur = movies_db.getMovies() ))
-    return jsonify(cur = movies_db.getMovies().fetchall())
-
+    ...
 
 
 
