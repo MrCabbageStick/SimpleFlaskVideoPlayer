@@ -1,13 +1,13 @@
-from flask import Flask, render_template, url_for, jsonify
+from flask import Flask, render_template, url_for, jsonify, send_file, send_from_directory
 from modules.database import DatabaseController
-from paths import MOVIES_DB, MOVIES_DIR
+from paths import MOVIES_FILE, MOVIES_DIR
 from modules.helpers import generateRandomId
-from modules.detect_movies import scanForMovies
+from modules.movieFileHandler import MovieFileHandler
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "Very very very secret key"
 
-movies_db = DatabaseController(MOVIES_DB)
+moviesHandler = MovieFileHandler(MOVIES_FILE, MOVIES_DIR, [".mp4"])
 
 
 @app.route("/")
@@ -18,17 +18,13 @@ def mainPage():
 @app.route("/watch/<video_id>")
 def videoPage(video_id: str):
 
+    movie = moviesHandler.getMovie(video_id)
+
     return render_template("video_player.html", movie = {
-        "title": "Mamuśki",
-        "url": url_for("static", filename="videos/pusia_w_butach.mp4")
+        "title": movie.title,
+        "url": url_for("static", filename=f"videos/{movie.file_name}")
+        # "url": f"/get_video/{video_id}"
     })
-
-
-@app.route("/detect_movies")
-def detectMoviesPage():
-
-    ...
-
 
 
 def main():
