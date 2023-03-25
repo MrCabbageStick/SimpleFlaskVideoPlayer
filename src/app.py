@@ -1,7 +1,5 @@
-from flask import Flask, render_template, url_for, jsonify, send_file, send_from_directory
-from modules.database import DatabaseController
+from flask import Flask, render_template, url_for
 from paths import MOVIES_FILE, MOVIES_DIR
-from modules.helpers import generateRandomId
 from modules.movieFileHandler import MovieFileHandler
 
 app = Flask(__name__)
@@ -23,7 +21,6 @@ def videoPage(video_id: str):
     return render_template("video_player.html", movie = {
         "title": movie.title,
         "url": url_for("static", filename=f"videos/{movie.file_name}")
-        # "url": f"/get_video/{video_id}"
     })
 
 
