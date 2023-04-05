@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <form action="#" method="get">
+
+        <fieldset>
+            
+            <legend>Movies</legend>
+
+            <input type="text" name="movie_id">
+            <input type="text" name="movie_title">
+            <input type="text" name="movie_series_id">
+
+        </fieldset>
+
+        <fieldset>
+
+            <legend>Series</legend>
+
+            <input type="text" name="series_id">
+            <input type="text" name="series_title">
+
+        </fieldset>
+
+        <fieldset>
+
+            <legend>Watch list</legend>
+
+            <input type="text" name="user_id">
+
+        </fieldset>
+
+        <fieldset>
+
+            <legend>Watch time</legend>
+
+            <input type="text" name="watchtime_movie_id">
+            <input type="text" name="watchtime_user_id">
+
+        </fieldset>
+
+        <button type="submit">Gimmie gimmie</button>
+
+    </form>
+
+    <div class="results">
+        Movies: <br><br>
+
+        {% for movie in movies %}
+
+            <p>
+                {{ movie.title }} : {{ movie.filename }} / {{ movie._id }}
+            </p>    
+
+        {% endfor %}
+
+    </div>
+
+    <hr>
+
+    <div class="results">
+
+        Series: <br><br>
+
+        {% for series in _series %}
+
+            <p>
+                {{ series.title }} : {{ series._id }}
+            </p>    
+
+        {% endfor %}
+
+    </div>
+
+    <div class="results">
+
+        {% if watchtime is not none %}
+            <p>{{ watchtime }}</p>
+        {% endif %}
+
+    </div>
+    
+</body>
+</html>
