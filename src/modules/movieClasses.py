@@ -17,5 +17,7 @@ class Series:
 @dataclass
 class User:
     _id: str
+    login: str
     name: str
     permission_level: int
+    password: str

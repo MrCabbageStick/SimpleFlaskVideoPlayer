@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{room.name}} | Group Watch</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='slider.js') }}"></script>
+
+<style>
+body,
+html{
+    height: 100%;
+}
+
+main{
+    height: 100%;
+    display: grid;
+    grid-template-columns: min-content auto 50rem;
+}
+
+.users{
+    padding: 1rem;
+}
+
+.hidden{
+    display: none;
+}
+.player-wrapper{
+    display: grid;
+    grid-template-rows: auto min-content;
+}
+video{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.slider{
+    --value: 0%;
+    width: 100%;
+    height: 2rem;
+    position: relative;
+    touch-action: pan-y;
+}
+.head{
+    position: absolute;
+    left: var(--value);
+    top: 50%;
+    translate: -50% -50%;
+    width: .7rem;
+    height: .7rem;
+    border-radius: 100%;
+    background-color: white;
+    box-shadow: 0 0 .5rem #0006;
+}
+.track{
+    position: absolute;
+    top: 50%;
+    translate: 0 -50%;
+    width: 100%;
+    height: .5rem;
+    box-shadow: inset 0 0 .2rem #0006;
+    border-radius: .25rem;
+    background-color: cadetblue;
+}
+.track:after{
+    content: '';
+    width: var(--value);
+    height: 100;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: aquamarine;
+}
+
+
+</style>
+</head>
+<body>
+
+    <input type="text" value="{{username}}" class="hidden" js-username-holder>
+
+    <main>
+
+        <div class="users">
+            <ul js-user-list>
+                {% for user in room.user_names %}
+                    <li>{{user}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="player-wraper">
+            <div class="video-wrapper">
+                <video src="{{ url_for('static', filename='template_video.mp4') }}" js-video-player controls></video>
+            </div>
+            <div class="controls">
+                <div class="slider" js-video-slider>
+                    <div class="track"></div>
+                    <div class="head"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-wrapper">
+            <div class="output" js-chat-output></div>
+            <input type="text" class="chat_input" js-chat-input>
+        </div>
+    </main>
+
+<script>
+
+
+const socket = io();
+const user_list_elem = document.querySelector("[js-user-list]");
+let users = {}
+
+socket.on("user_joined", data => {
+    users[data.username] = document.createElement("li");
+    users[data.username].textContent = data.username;
+    user_list_elem.appendChild(users[data.username])
+});
+
+socket.on("user_left", data => {
+    user_list_elem.removeChild(users[data.username]);
+});
+
+const username = document.querySelector("[js-username-holder]");
+const video_player = document.querySelector("[js-video-player]");
+const chat_output = document.querySelector("[js-chat-output]");
+const chat_input = document.querySelector("[js-chat-input]");
+
+const slider = new HorizontalSlider(
+    document.querySelector("[js-video-slider]"),
+    () => renderSlider(slider.value),
+    () => changeCurrentTime(slider.value / 100 * video_player.duration),
+    null,
+    () => renderSlider(slider.value)
+)
+
+// For better testing expirience
+video_player.volume = .1;
+
+// Video player events
+video_player.addEventListener("play", (e) => {e.preventDefault(); playVideo()});
+video_player.addEventListener("pause", (e) => {e.preventDefault(); stopVideo()});
+
+function renderChatMessage(content, author){
+    chat_output.innerHTML += `<p><span>${author}: </span><span>${content}</span></p>`;
+}
+
+function renderSlider(value){
+    slider.elem.style.setProperty("--value", `${slider.value}%`);
+}
+
+function stopVideo(){
+    socket.emit("stop_video", {});
+}
+
+function playVideo(){
+    socket.emit("play_video", {});
+}
+
+function changeCurrentTime(time){
+    socket.emit("change_time", {time: time});
+}
+
+socket.on("stop", () => { video_player.pause() })
+socket.on("play", () => { video_player.play() })
+
+socket.on("time_change", (data) => { 
+    console.log(data);
+    video_player.currentTime = data.time;
+    slider.setValue(data.time / video_player.duration * 100);
+})
+
+</script>
+    
+</body>
+</html>

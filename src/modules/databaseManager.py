@@ -60,10 +60,22 @@ class DatabaseManager():
 
     # User related
 
-    def addUser(self, *, user: User = None):
+    def addUser(self, user: User = None):
 
         timestamp = datetime.datetime.now().strftime(TIMESTAMP_FORMAT)
-
         self.database.execute(f"INSERT INTO users VALUES ('{user._id}', '{user.name}', '{timestamp}', {user.permission_level})")
 
+
+    def getUser(self, user_id: str = None, login: str = None) -> User | None:
+
+        if user_id is not None:
+            user = self.database.execute(f"SELECT id, login, name, permission_level, password FROM users WHERE user_id = {user_id}").fetchone()
+        
+        elif login is not None:
+            user = self.database.execute(f"SELECT id, login, name, permission_level, password FROM users WHERE login = {login}").fetchone()
+
+        else:
+            return None
+        
+        return User(*user)
 

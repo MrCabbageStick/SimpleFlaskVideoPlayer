@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <h1>You are joining: {{join_code}}</h1>
+
+    {% if room_exists %}
+    
+    <form action="#" method="post">
+
+        <input type="text" name="name">
+        <button type="submit">JOIN ROOM</button>
+
+    </form>
+
+    {% else %}
+
+    <h2>I'm sorry, but the room you're trying to join doesn't exist</h2>
+
+    {% endif %}
+</body>
+</html>
